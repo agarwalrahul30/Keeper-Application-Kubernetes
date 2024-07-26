@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-pod
+  labels:
+    app: multi-container-app
+spec:
+  containers:
+  - name: mongo-creds
+    image: mongo:latest
+    ports:
+    - containerPort: 27017
+  - name: creds-backend
+    image: rahulvivaops/vivaopsprojects-creds-backend:latest
+    ports:
+    - containerPort: 5000
+    env:
+    - name: DB_CREDS_URL
+      value: "mongodb://localhost:27017/creds"
+  - name: creds-frontend
+    image: rahulvivaops/vivaopsprojects-creds-frontend:latest
+    ports:
+    - containerPort: 3000
+    env:
+    - name: REACT_APP_API_URL
+      value: "http://localhost:5000/api/data"
+  

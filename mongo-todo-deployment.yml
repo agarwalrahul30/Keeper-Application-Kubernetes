@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-todo
+spec:
+  selector:
+    matchLabels:
+      app: mongo-todo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo-todo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-todo-storage
+      volumes:
+      - name: mongo-todo-storage
+        persistentVolumeClaim:
+          claimName: mongo-todo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-todo
+spec:
+  selector:
+    app: mongo-todo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017

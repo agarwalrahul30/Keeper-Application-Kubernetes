@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-creds
+spec:
+  selector:
+    matchLabels:
+      app: mongo-creds
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo-creds
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-creds-storage
+      volumes:
+      - name: mongo-creds-storage
+        persistentVolumeClaim:
+          claimName: mongo-creds-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-creds
+spec:
+  type: NodePort
+  selector:
+    app: mongo-creds
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+      nodePort: 30003

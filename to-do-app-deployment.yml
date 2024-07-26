@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: to-do-app
+spec:
+  selector:
+    matchLabels:
+      app: to-do-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: to-do-app
+    spec:
+      containers:
+      - name: to-do-app
+        image: rahulvivaops/vivaopsprojects-to-do-app:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_TODO_URL
+          value: mongodb://mongo-todo:27017/todo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: to-do-app
+spec:
+  selector:
+    app: to-do-app
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
